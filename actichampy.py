@@ -116,7 +116,6 @@ class Canvas(app.Canvas):
             self.last_sample_to_show = self.data.shape[1]
         elif event.key.name=='Z': #toggle scoll_time on
             self.scroll_time = True
-        elif 
         else:
             print event.key.name
     def on_key_release(self, event):
