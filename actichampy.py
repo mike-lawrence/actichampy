@@ -87,7 +87,7 @@ class Canvas(app.Canvas):
               np.tile(np.arange(self.samples_per_screen), self.nrows)].astype(np.float32)
     def __init__(self,data):
         self.data = data
-        self.samples_per_screen = 10000#self.data.shape[1]
+        self.samples_per_screen = self.data.shape[1]
         self.show_latest = True
         self.scroll_time = False
         self.last_sample_to_show = self.data.shape[1]#None
@@ -99,7 +99,6 @@ class Canvas(app.Canvas):
         self.program['a_index'] = self.index
         self.program['u_nrows'] = self.nrows
         self.program['u_n'] = self.samples_per_screen
-        # self._timer = app.Timer('auto', connect=self.on_timer, start=True)
         gloo.set_state(clear_color='black', blend=True,
                        blend_func=('src_alpha', 'one_minus_src_alpha'))
         gl.glEnable(gl.GL_BLEND)
@@ -122,9 +121,6 @@ class Canvas(app.Canvas):
         if event.key.name=='Z': #toggle scoll_time back off
             self.scroll_time = False
     def on_mouse_wheel(self, event):
-        # dx = np.sign(event.delta[1]) * .05 * self.samples_per_screen
-        # self.last_sample_to_show = int(self.last_sample_to_show * math.exp(.1*dx))
-        # print dx
         if not self.scroll_time:
             dy = np.sign(event.delta[1]) * .05
             self.samples_per_screen = int(self.samples_per_screen * math.exp(2.5*dy))
@@ -138,7 +134,6 @@ class Canvas(app.Canvas):
                 self.last_sample_to_show = self.samples_per_screen
             elif self.last_sample_to_show>self.data.shape[1]:
                 self.last_sample_to_show = self.data.shape[1]
-    # def on_timer(self, event):
     def on_draw(self, event):
         """Add some data at the end of each signal (real-time signals)."""
         k = int(1000/60) #emulating 1kHz new data rate (assuming this function gets called every refresh at 60Hz refresh rate)
@@ -152,8 +147,6 @@ class Canvas(app.Canvas):
             else:
                 this_data = self.data[:,(self.last_sample_to_show-self.samples_per_screen):self.last_sample_to_show]
         self.update_index()
-        # Signal 2D index of each vertex (row and col) and x-index (sample index
-        # within each signal).
         self.program['a_index'] = self.index
         self.program['u_n'] = self.samples_per_screen
         self.program['a_position'] = this_data.reshape(-1, 1).astype(np.float32)
@@ -162,8 +155,8 @@ class Canvas(app.Canvas):
         self.program.draw('line_strip')
 
 if __name__ == '__main__':
-    nrows = 32
-    n = 100000
+    nrows = 32 #32 channels
+    n = 10000 #start with 10s of data
     amplitudes = .1 + .2 * np.random.rand(nrows, 1).astype(np.float32)
     y = amplitudes * np.random.randn(nrows, n).astype(np.float32)
     c = Canvas(data=y)
