@@ -130,22 +130,27 @@ class Canvas(app.Canvas):
                 self.samples_per_screen = self.data.shape[1]
         elif not self.show_latest:
             self.last_sample_to_show = self.last_sample_to_show + self.samples_per_screen*(event.delta[0]/100)
-            if self.last_sample_to_show<self.samples_per_screen:
+            if self.last_sample_to_show < self.samples_per_screen:
                 self.last_sample_to_show = self.samples_per_screen
-            elif self.last_sample_to_show>self.data.shape[1]:
+            elif self.last_sample_to_show > self.data.shape[1]:
                 self.last_sample_to_show = self.data.shape[1]
     def on_draw(self, event):
         """Add some data at the end of each signal (real-time signals)."""
         k = int(1000/60) #emulating 1kHz new data rate (assuming this function gets called every refresh at 60Hz refresh rate)
         self.data = np.c_[self.data,amplitudes * np.random.randn(self.nrows, k)]
+        print [self.data.shape,self.samples_per_screen,self.show_latest,self.last_sample_to_show]
         if self.samples_per_screen > self.data.shape[1]:
             self.samples_per_screen = self.data.shape[1]
             this_data = self.data
         else:
             if self.show_latest:
                 this_data = self.data[:,-self.samples_per_screen:]
+                self.last_sample_to_show = self.data.shape[1]
             else:
-                this_data = self.data[:,(self.last_sample_to_show-self.samples_per_screen):self.last_sample_to_show]
+                if self.samples_per_screen > self.last_sample_to_show:
+                    this_data = self.data[:,0:self.samples_per_screen]
+                else:
+                    this_data = self.data[:,( self.last_sample_to_show - self.samples_per_screen ):self.last_sample_to_show]
         self.update_index()
         self.program['a_index'] = self.index
         self.program['u_n'] = self.samples_per_screen
@@ -155,7 +160,7 @@ class Canvas(app.Canvas):
         self.program.draw('line_strip')
 
 if __name__ == '__main__':
-    nrows = 32 #32 channels
+    nrows = 10 #32 channels
     n = 10000 #start with 10s of data
     amplitudes = .1 + .2 * np.random.rand(nrows, 1).astype(np.float32)
     y = amplitudes * np.random.randn(nrows, n).astype(np.float32)
