@@ -1,0 +1,5 @@
+- apply bandpass
+- x-axis ticks & labels
+- y-axis ticks & labels
+- amplitude normalization + color-coded y-axis labels
+- frequency domain side-graphic
