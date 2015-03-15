@@ -11,9 +11,10 @@
 from vispy import gloo
 from vispy import app
 import numpy as np
+import scipy.fftpack
 import math
 import OpenGL.GL as gl
-
+import time
 
 VERT_SHADER = """
 #version 120
@@ -93,6 +94,8 @@ class Canvas(app.Canvas):
 		self.last_sample_to_show = self.data.shape[1]#None
 		self.nrows = self.data.shape[0]
 		self.update_index() #creates self.index
+		self.equalize_amplitudes = False
+		self.bandpass = False
 		app.Canvas.__init__(self, title='Use your wheel to zoom!',keys='interactive')
 		self.program = gloo.Program(VERT_SHADER, FRAG_SHADER)
 		self.program['a_position'] = self.data.reshape(-1, 1)
@@ -115,6 +118,10 @@ class Canvas(app.Canvas):
 			self.last_sample_to_show = self.data.shape[1]
 		elif event.key.name=='Z': #toggle scoll_time on
 			self.scroll_time = True
+		elif event.key.name=='A':
+			self.equalize_amplitudes = not self.equalize_amplitudes
+		elif event.key.name=='B':
+			self.bandpass = not self.bandpass
 		else:
 			print event.key.name
 	def on_key_release(self, event):
@@ -138,19 +145,48 @@ class Canvas(app.Canvas):
 		"""Add some data at the end of each signal (real-time signals)."""
 		k = int(1000/60) #emulating 1kHz new data rate (assuming this function gets called every refresh at 60Hz refresh rate)
 		self.data = np.c_[self.data,amplitudes * np.random.randn(self.nrows, k)]
-		print [self.data.shape,self.samples_per_screen,self.show_latest,self.last_sample_to_show]
 		if self.samples_per_screen > self.data.shape[1]:
 			self.samples_per_screen = self.data.shape[1]
-			this_data = self.data
+			this_data = self.data.copy()
 		else:
 			if self.show_latest:
-				this_data = self.data[:,-self.samples_per_screen:]
+				this_data = self.data[:,-self.samples_per_screen:].copy()
 				self.last_sample_to_show = self.data.shape[1]
 			else:
 				if self.samples_per_screen > self.last_sample_to_show:
-					this_data = self.data[:,0:self.samples_per_screen]
+					this_data = self.data[:,0:self.samples_per_screen].copy()
 				else:
-					this_data = self.data[:,( self.last_sample_to_show - self.samples_per_screen ):self.last_sample_to_show]
+					this_data = self.data[:,( self.last_sample_to_show - self.samples_per_screen ):self.last_sample_to_show].copy()
+		#apply zero-padding before fft
+		if (np.log2(this_data.shape[1])%1)!=0:
+			next2pow = 2**np.ceil(np.log2(this_data.shape[1]))
+			pad_size = next2pow-this_data.shape[1]
+			num_head_zeros = np.floor(pad_size/2.0)
+			num_tail_zeros = np.ceil(pad_size/2.0)
+			head_zeros = np.zeros(shape=[this_data.shape[0],num_head_zeros] , dtype=np.float32 )
+			tail_zeros = np.zeros(shape=[this_data.shape[0],num_tail_zeros] , dtype=np.float32 )
+			this_data = np.c_[ head_zeros , this_data ]
+			this_data = np.c_[ this_data , tail_zeros ]
+			trim_needed = True
+		else:
+			trim_needed = False
+		from_fft = scipy.fftpack.rfft(this_data)
+		if self.bandpass:
+			#apply bandpass
+			W = scipy.fftpack.fftfreq(this_data.shape[1], d=0.001)
+			# W = W[0:(W.shape[0]/2),]
+			from_fft[:,(W<0.1)] = 0
+			from_fft[:,(W>30)] = 0
+			this_data = scipy.fftpack.irfft(from_fft)
+		if trim_needed:
+			this_data = this_data[:,num_head_zeros:-num_tail_zeros]
+		if self.equalize_amplitudes:
+			this_data = this_data.transpose()
+			this_data -= np.amin(this_data,axis=0)
+			this_data /= np.amax(this_data,axis=0)
+			this_data *= 2
+			this_data -= 1
+			this_data = this_data.transpose()
 		self.update_index()
 		self.program['a_index'] = self.index
 		self.program['u_n'] = self.samples_per_screen
@@ -160,8 +196,8 @@ class Canvas(app.Canvas):
 		self.program.draw('line_strip')
 
 if __name__ == '__main__':
-	nrows = 10 #32 channels
-	n = 10000 #start with 10s of data
+	nrows = 10 
+	n = 10000
 	amplitudes = .1 + .2 * np.random.rand(nrows, 1).astype(np.float32)
 	y = amplitudes * np.random.randn(nrows, n).astype(np.float32)
 	c = Canvas(data=y)
