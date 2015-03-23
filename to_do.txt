@@ -1,6 +1,7 @@
 - x-axis ticks & labels
 - y-axis ticks & labels
-- amplitude normalization + color-coded y-axis labels
+- amplitude-color-coded y-axis labels
 - frequency domain side-graphic
 - set # of channels
 - scroll channels
+- try better bandpass filter (scipy.signal.firwin)
