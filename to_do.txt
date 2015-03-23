@@ -2,6 +2,7 @@
 - y-axis ticks & labels
 - amplitude-color-coded y-axis labels
 - frequency domain side-graphic
+	- might need to restrict the samples_per_screen to powers of 2 to make the frequency-domain graphic accurate
 - set # of channels
 - scroll channels
 - try better bandpass filter (scipy.signal.firwin)
