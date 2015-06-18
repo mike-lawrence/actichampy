@@ -3,6 +3,8 @@
 - amplitude-color-coded y-axis labels
 - frequency domain side-graphic
 - toggle show/hide individual channels
+	- best to do this on topo plot
 - click/drag re-order channels
+	- best to do this on topo plot (via order of "enable" clicking)?
 - save view state (order & shown/hidden)
 - try better bandpass filter (scipy.signal.firwin; http://wiki.scipy.org/Cookbook/ButterworthBandpass; http://wiki.scipy.org/Cookbook/FIRFilter; http://stackoverflow.com/questions/16301569/bandpass-filter-in-python)
