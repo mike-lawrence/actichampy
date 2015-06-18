@@ -2,7 +2,7 @@
 - y-axis ticks & labels
 - amplitude-color-coded y-axis labels
 - frequency domain side-graphic
-	- might need to restrict the samples_per_screen to powers of 2 to make the frequency-domain graphic accurate
-- set # of channels
-- scroll channels
+- toggle show/hide individual channels
+- click/drag re-order channels
+- save view state (order & shown/hidden)
 - try better bandpass filter (scipy.signal.firwin; http://wiki.scipy.org/Cookbook/ButterworthBandpass; http://wiki.scipy.org/Cookbook/FIRFilter; http://stackoverflow.com/questions/16301569/bandpass-filter-in-python)

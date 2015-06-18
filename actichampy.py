@@ -121,13 +121,13 @@ class Canvas( app.Canvas ):
 			self.equalize_amplitudes = not self.equalize_amplitudes
 		elif event.key.name in ['b','B']:
 			self.bandpass = not self.bandpass
-		elif event.key.name == 'Up':
-			self.samples_per_screen_pow += 1
-		elif event.key.name == 'Down':
-			self.samples_per_screen_pow -= 1			
 		elif event.key.name == 'Left':
-			self.alpha_shift += 1
+			self.samples_per_screen_pow += 1
 		elif event.key.name == 'Right':
+			self.samples_per_screen_pow -= 1			
+		elif event.key.name == 'Up':
+			self.alpha_shift += 1
+		elif event.key.name == 'Down':
 			self.alpha_shift -= 1			
 		else:
 			print event.key.name
