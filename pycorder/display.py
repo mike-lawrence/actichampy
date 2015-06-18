@@ -158,7 +158,7 @@ class DISP_Scope(Qwt.QwtPlot, ModuleBase):
         '''
         self.setScale(self.online_cfg.set_scale(100.0, 1000.0)) # EEG: 100µV, AUX: 1000µV / Division
         self.timebase = self.online_cfg.set_timebase(10.0)      # 10s / Screen
-        self.online_cfg.set_groupsize(16)                       # group size 16 channels
+        self.online_cfg.set_groupsize(64)                       # group size 16 channels
         self.online_cfg.checkBoxBaseline.setChecked(True)       # baseline correction enabled                    
         
         # update display
@@ -334,8 +334,8 @@ class DISP_Scope(Qwt.QwtPlot, ModuleBase):
         ''' Setup display traces according to EEG data block settings
         '''
         # select the requested channel group
-        self.channel_group = self.eeg.eeg_channels[self.channel_slice]
-        self.channel_group_properties = self.eeg.channel_properties[self.channel_slice]
+        self.channel_group = self.eeg.eeg_channels#[self.channel_slice]
+        self.channel_group_properties = self.eeg.channel_properties#[self.channel_slice]
         
         # remove old traces
         for pc in self.traces:
@@ -392,8 +392,9 @@ class DISP_Scope(Qwt.QwtPlot, ModuleBase):
         ''' Copy all traces from input buffer to display transfer buffer
         '''
         # select the requested channel group
-        self.channel_group = self.eeg.eeg_channels[self.channel_slice]
-        self.channel_group_properties = self.eeg.channel_properties[self.channel_slice]
+        self.channel_group = self.eeg.eeg_channels#[self.channel_slice]
+        self.channel_group_properties = self.eeg.channel_properties#[self.channel_slice]
+        self.channel_group[-1,:] = self.channel_group[-1,:]/10
         
         # anything to display?
         if self.channel_group.shape[0] == 0:

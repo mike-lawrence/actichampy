@@ -92,6 +92,7 @@ class Ui_frmScopeOnline(object):
         self.comboBoxGroupSize.addItem(QtCore.QString())
         self.comboBoxGroupSize.addItem(QtCore.QString())
         self.comboBoxGroupSize.addItem(QtCore.QString())
+        self.comboBoxGroupSize.addItem(QtCore.QString())
         self.gridLayout_OnlineScope.addWidget(self.comboBoxGroupSize, 2, 2, 1, 1)
         self.gridLayout_2.addLayout(self.gridLayout_OnlineScope, 0, 0, 1, 1)
         self.horizontalLayout = QtGui.QHBoxLayout()
@@ -110,7 +111,7 @@ class Ui_frmScopeOnline(object):
         self.comboBoxTime.setCurrentIndex(6)
         self.comboBoxScale.setCurrentIndex(7)
         self.comboBoxChannels.setCurrentIndex(-1)
-        self.comboBoxGroupSize.setCurrentIndex(0)
+        self.comboBoxGroupSize.setCurrentIndex(6)
         QtCore.QMetaObject.connectSlotsByName(frmScopeOnline)
 
     def retranslateUi(self, frmScopeOnline):
@@ -152,6 +153,7 @@ class Ui_frmScopeOnline(object):
         self.comboBoxGroupSize.setItemText(3, QtGui.QApplication.translate("frmScopeOnline", "8", None, QtGui.QApplication.UnicodeUTF8))
         self.comboBoxGroupSize.setItemText(4, QtGui.QApplication.translate("frmScopeOnline", "16", None, QtGui.QApplication.UnicodeUTF8))
         self.comboBoxGroupSize.setItemText(5, QtGui.QApplication.translate("frmScopeOnline", "32", None, QtGui.QApplication.UnicodeUTF8))
+        self.comboBoxGroupSize.setItemText(6, QtGui.QApplication.translate("frmScopeOnline", "64", None, QtGui.QApplication.UnicodeUTF8))
         self.checkBoxBaseline.setText(QtGui.QApplication.translate("frmScopeOnline", "Baseline Correction", None, QtGui.QApplication.UnicodeUTF8))
         self.pushButton_Now.setText(QtGui.QApplication.translate("frmScopeOnline", "Now", None, QtGui.QApplication.UnicodeUTF8))
 
